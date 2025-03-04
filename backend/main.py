@@ -1,8 +1,5 @@
-from fastapi import FastAPI, Query, HTTPException
-from services.bigquery_service import bigquery_service
-from services.trends_service import trends_service
-from services.github_service import github_service
-from typing import List, Optional
+from fastapi import FastAPI
+from routes import blockchain, github, trends
 
 app = FastAPI(
     title="Web3 Knowledge System API",
@@ -14,27 +11,10 @@ app = FastAPI(
 def health_check():
     return {"status": "OK", "message": "Web3 Knowledge System API is running"}
 
-@app.get("/ethereum")
-async def get_ethereum_transactions():
-    return bigquery_service.fetch_ethereum_data()
-
-@app.get("/github")
-async def get_github_repositories():
-    return github_service.get_github_repositories()
-
-@app.get("/trends")
-async def get_trends(
-    keywords: List[str] = Query(
-        default=['ethereum'],
-        description="List of keywords to get trends for (max 5 keywords)",
-        max_length=5
-    )
-):
-    response = trends_service.get_trends(keywords)
-    if response["status"] == "error":
-        raise HTTPException(status_code=400, detail=response["message"])
-    return response["data"]
-
+# Include routers
+app.include_router(blockchain.router)
+app.include_router(github.router)
+app.include_router(trends.router)
 
 if __name__ == "__main__":
     import uvicorn
