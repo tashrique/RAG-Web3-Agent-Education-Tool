@@ -1,6 +1,10 @@
 from pytrends.request import TrendReq
 from typing import Dict, List, Any
 from datetime import datetime
+import pandas as pd
+
+# Opt-in to future behavior to avoid downcasting warning
+pd.set_option('future.no_silent_downcasting', True)
 
 class TrendsService:
     def __init__(self):

@@ -2,7 +2,7 @@ from google.cloud import bigquery
 import os
 from typing import List, Dict, Any
 from dotenv import load_dotenv
-from services.data_sources import bigquery_sources
+from data_sources import bigquery_sources
 class BigQueryService:
     def __init__(self):
         """Initialize BigQuery service with credentials"""
@@ -25,5 +25,4 @@ class BigQueryService:
         results = query_job.result()
         return [dict(row) for row in results]
 
-# Create a singleton instance
 bigquery_service = BigQueryService()

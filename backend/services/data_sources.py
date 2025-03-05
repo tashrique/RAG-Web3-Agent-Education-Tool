@@ -59,14 +59,5 @@ bigquery_sources = {
     },
 }
 
-trends_sources = {
-    "google_trends": {
-        "description": "Google Trends data for blockchain-related topics."
-    }
-}
-
-github_sources = {
-    "github_repos": {
-        "description": "Trending GitHub repositories for blockchain projects."
-    }
-}
+trends_sources = ["ethereum", "polygon", "bitcoin", "avalanche"]
+github_sources = ["ethereum", "polygon", "bitcoin", "avalanche"]
