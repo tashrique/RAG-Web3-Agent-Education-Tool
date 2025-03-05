@@ -32,7 +32,7 @@ class PineconeIndex:
         self.index.upsert(vectors)
 
         
-    def query_vectors(self, query_text: str, top_k: int = 10):
+    def query_vectors(self, query_text: str, top_k: int = 100):
         """
         Query Pinecone with an embedding of `query_text`.
         
@@ -56,18 +56,16 @@ class PineconeIndex:
             top_k=top_k,
             include_metadata=True
         )
-
         # Format and extract relevant data
         results = []
-        for match in response.get("matches", []):
-            print(f"🔍 Match: {match}")
-            results.append({
-                "id": match["id"],
-                "score": match["score"],
-                "source": match["metadata"].get("source", "unknown"),
-                "content": match["metadata"].get("text", "No content available")
-            })
+        for match in response['matches']:
+            raw_content = match['metadata'].get('content', '')
+            source = match['metadata'].get('source', 'unknown')
 
-        return results
+            formatted_content = raw_content.replace("{", "").replace("}", "").replace("'", "")
+
+            results.append(f"Source: {source}\nContent: {formatted_content}\n")
+
+        return "\n".join(results)
     
 pinecone_index = PineconeIndex()

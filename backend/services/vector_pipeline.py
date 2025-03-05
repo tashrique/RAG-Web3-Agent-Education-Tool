@@ -63,7 +63,6 @@ class VectorPipeline:
 
         return vectors
     
-
     def store_vectors(self, vectors):
         processed_vectors = []
 
@@ -92,17 +91,39 @@ class VectorPipeline:
 
         return {"status": "success", "message": "Vectors stored successfully"}
 
+    def generate_response(self, query):
+        context = self.pinecone_index.query_vectors(query)
+        prompt = f"""
+        Using the following retrieved data, answer the question while citing sources:
+    
+        {context}
+
+        Ensure the response includes verifiable sources. 
+        Question: {query}
+
+        Be concise and to the point. If google trends data shown, analyze the data and provide a summary.
+        If github data shown, analyze the data and provide a summary.
+        """
+
+        response = self.gemini_embeddings.client.models.generate_content(
+            model="gemini-1.5-flash",
+            contents=[prompt]
+        )
+        return response.text
+
 if __name__ == "__main__":
     vector_pipeline = VectorPipeline()
-    print("🔄 Starting vector processing...")
-    vectors = vector_pipeline.process_text()
-    print(f"✅ Processed {len(vectors)} vectors")
-    print("🔄 Storing vectors in Pinecone...")
-    vector_pipeline.store_vectors(vectors)
-    print("✅ Vector storage complete")
+    # print("🔄 Starting vector processing...")
+    # vectors = vector_pipeline.process_text()
+    # print(f"✅ Processed {len(vectors)} vectors")
+    # print("🔄 Storing vectors in Pinecone...")
+    # vector_pipeline.store_vectors(vectors)
+    # print("✅ Vector storage complete")
 
     # Test query
-    query = "What is the latest news on Bitcoin?"
+    query = "how do i learn about blockchain?"
     print(f"🔍 Querying Pinecone with: {query}")
     results = vector_pipeline.pinecone_index.query_vectors(query)
-    print(f"✅ Query results: {results}")
+    print("🔄 Generating response...")
+    response = vector_pipeline.generate_response(query)
+    print(f"✅ Response: {response}")
